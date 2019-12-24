@@ -50,7 +50,7 @@ Output: `55 546`
 
 Note:
 1. Type of any variable, return type of functions are written to right.
-2. When two or more **consecutive** named function parameters share a type, you can omit the type from all but the last. eg: `func add(x, y int)`.
+2. When two or more **consecutive** named function parameters share a type, you can omit the type from all but the last. eg: `func add(x, y int)`. Some function can have args sth like: `func add(x, y int, z bool)` also.
 3. Function may have **multiple return results** as in above example program.
 
 **Named return values**: The return values of any function can be named which will allow usage of *naked* `return` statement.
@@ -64,3 +64,76 @@ func addAndMultiply(x int, y int) (a int, m int) {
 ```
 
 Though even after defining named returns, you can use `return a, m`. Naked return is not preffered in long functions for better readability.
+
+## Variables
+
+### Declaration of Variables
+This can be done in following ways:
+1. Method 1: Declaration with zero initialisation
+```golang
+var a, b, c int
+```
+Note: <s>`var a, b, c int, d bool`</s> is wrong, i.e. all variables in one line must be of same type defined at the end. (Here *Go* will take `int` as the last word and throw an error "unexpected ,")
+2. Method 2: Declaration with zero initialisation
+If you want to define multiple kinds of variables, you can use multiple lines of point 1 or:
+```golang
+var(
+	a, b int
+	c bool
+)
+```
+3. Method 3: Declaration with initialisation.
+```golang
+var a, b, c = 1, 2, true
+```
+Here, variables can be of different type.
+4. Method 4: Declaration with initialisation.
+```golang
+a := 5
+```
+
+Here you don't need to use `var` keyword but this method can ber used only inside a function.
+
+Notice in method 1, 2 above, the variables are auto initialised to a **ZERO VALUE** which is `0` for numeric types, `false` for the boolean, and `""` (empty string) for strings.
+
+### Basic Types and Conversions
+```
+bool
+
+string
+
+int  int8  int16  int32  int64
+uint uint8 uint16 uint32 uint64 uintptr
+
+byte // alias for uint8
+
+rune // alias for int32, represents a Unicode code point
+
+float32 float64
+
+complex64 complex128
+```
+By default int = intX for X bit system (X = 32 or 64). There exist **nothing like float**.
+
+**Conversion:**
+```golang
+var f float32 = 5.5
+var a int = int(f)
+```
+
+This won't work for string conversions. What works?
+```golang
+i, err := strconv.Atoi("-42")
+s := strconv.Itoa(-42)
+
+b, err := strconv.ParseBool("true")
+f, err := strconv.ParseFloat("3.1415", 64)
+i, err := strconv.ParseInt("-42", 10, 64)
+u, err := strconv.ParseUint("42", 10, 64)
+```
+
+You can print type by: `fmt.Printf("a is of type %T", a)`
+
+## Constants
+
+Constants are declared like `const Truth = true`. They cannot be declared with `:=`, though the parenthesis format is valid.
