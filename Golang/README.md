@@ -1,4 +1,4 @@
-Following are my notes from "A Tour of Go".
+Following are my notes from [A Tour of Go](https://tour.golang.org/welcome/1).
 
 # Basics of Golang
 
