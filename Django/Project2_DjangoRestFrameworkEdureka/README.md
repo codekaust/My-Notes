@@ -104,7 +104,7 @@ class employeesList(APIView):
 
 Following is an unrelated `views.py` which show a basic post api and data manipulation:
 
-```
+```python
 from django.shortcuts import render
 
 from django.http import HttpResponse
