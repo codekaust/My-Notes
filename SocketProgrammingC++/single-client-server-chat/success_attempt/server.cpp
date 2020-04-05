@@ -68,6 +68,7 @@ int main(){
         std::getline(std::cin, in);
 
         if(in=="exit"){
+            close(server_fd);
             break;
         }
 

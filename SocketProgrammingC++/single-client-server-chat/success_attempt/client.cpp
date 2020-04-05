@@ -48,6 +48,8 @@ int main(){
         std::getline(std::cin, in);
 
         if(in=="exit"){
+            std::cout<<"Close Socket"<<std::endl;
+            close(sock);
             break;
         }
 
