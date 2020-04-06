@@ -20,7 +20,7 @@ int main(){
     int max_sd;   
     struct sockaddr_in address;   
          
-    char buffer[1024];  //data buffer of 1K  
+    char buffer[1025];  //data buffer of 1K  
          
     //set of socket descriptors  
     fd_set readfds;   
@@ -43,8 +43,7 @@ int main(){
      
     //set master socket to allow multiple connections ,  
     //this is just a good habit, it will work without this  
-    if( setsockopt(master_socket, SOL_SOCKET, SO_REUSEADDR, (char *)&opt,  
-          sizeof(opt)) < 0 )   
+    if( setsockopt(master_socket, SOL_SOCKET, SO_REUSEADDR, (char *)&opt, sizeof(opt)) < 0 )   
     {   
         perror("setsockopt");   
         exit(EXIT_FAILURE);   
@@ -55,7 +54,7 @@ int main(){
     address.sin_addr.s_addr = INADDR_ANY;   
     address.sin_port = htons( PORT );   
          
-    //bind the socket to localhost port 8888  
+    //bind the socket to localhost port PORT  
     if (bind(master_socket, (struct sockaddr *)&address, sizeof(address))<0)   
     {   
         perror("bind failed");   
@@ -119,8 +118,7 @@ int main(){
             }   
              
             //inform user of socket number - used in send and receive commands  
-            printf("New connection , socket fd is %d , ip is : %s , port : %d  
-                  \n" , new_socket , inet_ntoa(address.sin_addr) , ntohs 
+            printf("New connection , socket fd is %d , ip is : %s , port : %d \n" , new_socket , inet_ntoa(address.sin_addr) , ntohs 
                   (address.sin_port));   
            
             //send new connection greeting message  
@@ -173,7 +171,12 @@ int main(){
                     //set the string terminating NULL byte on the end  
                     //of the data read  
                     buffer[valread] = '\0';   
-                    send(sd , buffer , strlen(buffer) , 0 );   
+                    for(int j=0; j<max_clients; j++){
+                        int temp_sd = client_socket[j];
+                        if(temp_sd!=sd){
+                            send(temp_sd , buffer , strlen(buffer) , 0 );   
+                        }
+                    }
                 }   
             }   
         }   
