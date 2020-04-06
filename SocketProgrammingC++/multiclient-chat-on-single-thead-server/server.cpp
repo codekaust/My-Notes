@@ -168,6 +168,8 @@ int main(){
                 //Echo back the message that came in  
                 else 
                 {   
+                    puts("GOT A MESSAGE");
+
                     //set the string terminating NULL byte on the end  
                     //of the data read  
                     buffer[valread] = '\0';   
