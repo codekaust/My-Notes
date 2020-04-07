@@ -1,17 +1,11 @@
-#include <stdlib.h>
-#include <sys/time.h>
-#include <sys/types.h>
 #include <unistd.h>
 #include <string.h>
 #include <sys/socket.h> 
 #include <arpa/inet.h> 
-
-#define PORT 3001 
-
 #include <iostream>
 #include <string>
 
-using namespace std;
+#define PORT 3001
 
 int main(void) {
     int client_sock = 0;
@@ -65,8 +59,8 @@ int main(void) {
         
         //check if something happened in stdin (user input) file descriptor -> read stdin and send to server
         else if (FD_ISSET(0, &rfds)) {
-            string s;
-            getline(cin, s);
+            std::string s;
+            getline(std::cin, s);
 
             if (s == "exit") {
                 std::cout << "Closing Socket..." << std::endl;
