@@ -22,12 +22,6 @@ int main(){
          
     char buffer[1025];  //data buffer of 1K  
          
-    //set of socket descriptors  
-    fd_set readfds;   
-         
-    //a message  
-    char *message = "ECHO Daemon v1.0 \r\n";   
-     
     //initialise all client_socket[] to 0 so not checked  
     for (i = 0; i < max_clients; i++)   
     {   
@@ -60,7 +54,7 @@ int main(){
         perror("bind failed");   
         exit(EXIT_FAILURE);   
     }   
-    printf("Listener on port %d \n", PORT);   
+    printf("Listening on port %d \n", PORT);   
          
     //try to specify maximum of 3 pending connections for the master socket  
     if (listen(master_socket, 3) < 0)   
@@ -72,7 +66,12 @@ int main(){
     //accept the incoming connection  
     addrlen = sizeof(address);   
     puts("Waiting for connections ...");   
-         
+
+    char* greeting = "You are connected!";
+
+    //set of socket descriptors  
+    fd_set readfds;   
+    
     while(TRUE)   
     {   
         //clear the socket set  
@@ -122,7 +121,7 @@ int main(){
                   (address.sin_port));   
            
             //send new connection greeting message  
-            if( send(new_socket, message, strlen(message), 0) != strlen(message) )   
+            if( send(new_socket, greeting, strlen(greeting), 0) != strlen(greeting) )   
             {   
                 perror("send");   
             }   
@@ -150,9 +149,11 @@ int main(){
                  
             if (FD_ISSET( sd , &readfds))   
             {   
-                //Check if it was for closing , and also read the  
-                //incoming message  
-                if ((valread = read( sd , buffer, 1024)) == 0)   
+                //Check if it was for closing , and also read the incoming message  
+
+                valread = read( sd , buffer, 1024);
+
+                if (valread == 0)   
                 {   
                     //Somebody disconnected , get his details and print  
                     getpeername(sd , (struct sockaddr*)&address , \ 
@@ -165,17 +166,23 @@ int main(){
                     client_socket[i] = 0;   
                 }   
                      
-                //Echo back the message that came in  
                 else 
                 {   
-                    puts("GOT A MESSAGE");
 
                     //set the string terminating NULL byte on the end  
                     //of the data read  
-                    buffer[valread] = '\0';   
+                    buffer[valread] = '\0';
+
+                    printf("from_socket: %d\n", sd);
+
+                    printf("Recieved message: %s\n", buffer);
+
                     for(int j=0; j<max_clients; j++){
                         int temp_sd = client_socket[j];
-                        if(temp_sd!=sd){
+
+                        if(temp_sd != sd && temp_sd!=0){
+                            printf("sending to socket: %d\n", temp_sd);
+
                             send(temp_sd , buffer , strlen(buffer) , 0 );   
                         }
                     }
