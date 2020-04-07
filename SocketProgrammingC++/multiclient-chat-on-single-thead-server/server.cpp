@@ -5,6 +5,7 @@
 #include <unistd.h>     
 #include <arpa/inet.h> 
 
+#include <string>
 #define PORT 3001
 
 int main(){
@@ -98,7 +99,7 @@ int main(){
            
             //send greeting and inform client of its socket_fd number (which serves as its name)
             char greeting[1024];
-            sprintf(greeting, "Successfully connected with server. Your socket_fd number (serves as name) is %d.", new_socket);  
+            sprintf(greeting, "Successfully connected with server.\nYour socket_fd number (serves as name) is %d.\n", new_socket);  
             if(send(new_socket, greeting, strlen(greeting), 0) != strlen(greeting))      
                 perror("send");   
                  
@@ -128,7 +129,6 @@ int main(){
                 if (valread == 0)   
                 {   
                     //Somebody disconnected , get his details and print  
-                    getpeername(sd , (struct sockaddr*)&address , (socklen_t*)&addrlen);   
                     printf("Client disconnected with socket_fd %d.", sd);   
                          
                     //Close the socket and mark as 0 in list for reuse  
@@ -142,7 +142,11 @@ int main(){
                     buffer[valread] = '\0';
 
                     //print incoming message details
-                    printf("Recieved message: %s\n, from socket_fd: %d", buffer, sd);
+                    printf("Recieved message: %s, from socket_fd: %d\n", buffer, sd);
+
+                    //Used while sending messages to clients
+                    std::string msg_string = "Client "+std::to_string(sd)+": "+buffer;
+                    char* msg = (char *)msg_string.c_str();
 
                     //send incoming message details to all clients
                     //socket_fd (serves as client name) is added in string showing from which client the request has been recieved
@@ -150,7 +154,7 @@ int main(){
                         int temp_sd = client_sockets[j];
 
                         if(temp_sd != sd && temp_sd!=0){
-                            send(temp_sd, buffer, strlen(buffer), 0 );   
+                            send(temp_sd, msg, strlen(msg), 0 );   
                         }
                     }
                 }   
