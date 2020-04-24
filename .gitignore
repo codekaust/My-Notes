@@ -2,3 +2,4 @@
 LearningGAN/img/
 *.swp
 *.swo
+*/**/.out
