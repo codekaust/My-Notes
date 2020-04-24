@@ -11,3 +11,7 @@ Install VM from [this link](https://www.virtualbox.org/wiki/Downloads). Also, in
 Download ZSecurity Kali image from [here](https://zsecurity.org/download-custom-kali/). Double clickfile to add in VBox. Now allot resc (2gb ram, 2 processors). In network setting enable Adapter1 and network - AttachedTo: NATNetwork, Name: NatNetwork.
 
 These links may help: [Fix NatNetwork](https://www.youtube.com/watch?v=y0PMFg-oAEs), [Install Kali](https://www.youtube.com/watch?v=TU-TgF_UnAI), [Got Blank Screen](https://zsecurity.org/got-a-blank-screen-after-importing-kali-in-virtual-box-heres-how-to-fix-it/).
+
+## Creating and using Snapshots
+
+Snapshot stores state of virtual machine, git commits, where you can go back any time. Snapshot can be easily taken by opning option of Kali VM and using camera-take button (put a good name, desc with date if required). Snapshots can restored easily too using camera-restore button.
