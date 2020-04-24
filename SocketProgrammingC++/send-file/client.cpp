@@ -46,9 +46,6 @@ int main(int argc, char** argv){
     do{
 
         in.read(&buffer[0], BUF_SIZE);      // Read at most n bytes into
-
-		std::cout<<buffer<<std::endl;
-
         send(sock, buffer, BUF_SIZE, 0);
     } while (in.gcount() > 0);  
 

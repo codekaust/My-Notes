@@ -52,17 +52,13 @@ int main(int argc, char** argv){
                 (socklen_t*)&addrlen))<0){
         perror("accept"); 
         exit(EXIT_FAILURE); 
-    }else
-	{
-		std::cout<<"Socket Connected"<<std::endl;
-	}
-	
+    }else std::cout<<"Socket Connected"<<std::endl;	
+
 
     std::ofstream out(argv[1], ios_base::out | ios_base::binary);
 
+	int valread;
     while(true) {
-        int valread;
-
         valread = read(new_socket, buffer, BUF_SIZE);
 
 		//client disconnects
@@ -70,8 +66,6 @@ int main(int argc, char** argv){
 			close(new_socket);
 			break;
 		}
-
-		std::cout<<buffer<<std::endl;
 
         out.write(&buffer[0], BUF_SIZE);
     }        

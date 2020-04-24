@@ -2,4 +2,5 @@
 LearningGAN/img/
 *.swp
 *.swo
-*/**/.out
+*/**/*.out
+*/**/.vscode/
