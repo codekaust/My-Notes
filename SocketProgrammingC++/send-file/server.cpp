@@ -13,7 +13,6 @@
 #include <fstream>
 
 const static int BUF_SIZE = 1024;
-using std::ios_base;
 
 int main(int argc, char** argv){
     int server_fd;
@@ -55,7 +54,7 @@ int main(int argc, char** argv){
     }else std::cout<<"Socket Connected"<<std::endl;	
 
 
-    std::ofstream out(argv[1], ios_base::out | ios_base::binary);
+    std::ofstream out(argv[1], std::ios_base::out | std::ios_base::binary);
 
 	int valread;
     while(true) {

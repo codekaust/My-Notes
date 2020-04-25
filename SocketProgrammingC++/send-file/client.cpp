@@ -12,7 +12,6 @@
 #include <fstream>
 
 const static int BUF_SIZE = 1024;
-using std::ios_base;
 
 int main(int argc, char** argv){
     int sock=0;
@@ -41,7 +40,7 @@ int main(int argc, char** argv){
     } 
 
     //for reading file
-    std::ifstream in(argv[1], ios_base::in | ios_base::binary);
+    std::ifstream in(argv[1], std::ios_base::in | std::ios_base::binary);
 
     do{
 
