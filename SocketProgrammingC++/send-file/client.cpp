@@ -42,11 +42,12 @@ int main(int argc, char** argv){
     //for reading file
     std::ifstream in(argv[1], std::ios_base::in | std::ios_base::binary);
 
-    do{
 
-        in.read(&buffer[0], BUF_SIZE);      // Read at most n bytes into
+    in.read(&buffer[0], BUF_SIZE);
+    while (in.gcount() > 0){
         send(sock, buffer, BUF_SIZE, 0);
-    } while (in.gcount() > 0);  
+        in.read(&buffer[0], BUF_SIZE);
+    }
 
 	close(sock);
 
