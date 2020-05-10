@@ -44,7 +44,7 @@
 			- For ASCENDING ORDER, we passes `std::greater<type>` which returns if first parameter is bigger. So, we will define our own lambda:
 				`auto cmp = [](vector<int> left, vector<int> right) { return (left.size()) > (right.size()); };`
 			- FOR DESCENDING, do similar with sign `<`
-			-One more way:
+			- One more way:
 			Example:
 
 			```cpp
