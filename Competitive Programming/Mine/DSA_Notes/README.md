@@ -32,7 +32,7 @@ Steps:
 		- Update `curr = curr_root`
 	- Else `break;`
 
-## Deletion in Max Heap (Downheap)
+### Deletion in Max Heap (Downheap)
 
 NOTE: Deletion means that a element is taken out. You must always take out the `max element` only from a `max heap` (cause that is the purpose of the heap, priority queue). The following algorithm taken out the root element only.
 
