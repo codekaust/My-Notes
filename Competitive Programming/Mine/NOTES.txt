@@ -1,0 +1,3 @@
+1. Given points on x axis, the point from which sum of absolute distances to each point is any point between the two middle points (n=even) or at the middle point (n=odd). Middle here refers to MEDIAN not mod. Middle point means, when sorted to middle index p jo point hoga. Why?: point a & b ke biich k kisi bhi point se sum of absolute distances to a & b is fix=abs_dist(a,b).
+
+2. How to traverse a 2d array diagonally? (How to handle dp in which invalid indices are accessed?): min-sum-path-in-matrix.cpp
