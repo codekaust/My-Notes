@@ -47,3 +47,19 @@ Steps:
 			- Find max of chilren.
 			- Swap values max of child with curr.
 			- Make curr point at the swapped child.
+
+### Heapify
+
+Basically this converts a complete binary tree into a min/max heap. This can be useful to convert a given array into a heap without inserting it one by one using upheap. (just a bit simple implementation of creating a heap (or element insertions, you can say that) using Downheap).
+
+Algorithm: Keep reading nodes from back of array (that is bottom to top for a heap) and Downheap. See [link](https://youtu.be/HqPJF2L5h9U?t=2623).
+
+## Heap Sort
+
+Given an array arr to sort. Convert it into a heap.
+- Method1: Read elemets and insert in heap using insert function as given above.
+- Method2: Pass the array to heapify function.
+
+Now, we have a heap (say max_heap).
+
+Now, lets say name of array representing heap is `heap_arr`. Just keep deleting elements one by one till the `heap_size` comes down to 1. At each deletion, save the deleted element at `heap_size` position of array. In this manner you will simply fill up the array `heap_arr` with elements max to min from back to front, i.e. array got sorted in increasing order.
