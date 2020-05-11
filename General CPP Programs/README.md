@@ -52,60 +52,73 @@
 			#include <queue>
 			#include <vector>
 			#include <iostream>
-			 
+
+			bool cmpa(int l, int r){
+				return l>r;
+			}
+
 			template<typename T> void print_queue(T& q) {
-			    while(!q.empty()) {
-			        std::cout << q.top() << " ";
-			        q.pop();
-			    }
-			    std::cout << '\n';
+			while(!q.empty()) {
+				std::cout << q.top() << " ";
+				q.pop();
+			}
+			std::cout << '\n';
 			}
 
 			template<typename T> void print_queue_2(T& q) {
-			    while(!q.empty()) {
-			        std::cout << q.top().size() << " ";
-			        q.pop();
-			    }
-			    std::cout << '\n';
+			while(!q.empty()) {
+				std::cout << q.top().size() << " ";
+				q.pop();
+			}
+			std::cout << '\n';
 			}
 
 			struct CompareVec { 
-			    bool operator()(std::vector<int> left, std::vector<int> right) 
-			    { 
-			        return left.size() > right.size(); 
-			    } 
+			bool operator()(std::vector<int> left, std::vector<int> right) 
+			{ 
+				return left.size() > right.size(); 
+			} 
 			}; 
-			 
+
 			int main() {
-			    std::priority_queue<int> q;
-			 
-			    for(int n : {1,8,5,6,3,4,0,9,7,2})
-			        q.push(n);
-			 
-			    print_queue(q);
-			 
-			    std::priority_queue<int, std::vector<int>, std::greater<int> > q2;
-			 
-			    for(int n : {1,8,5,6,3,4,0,9,7,2})
-			        q2.push(n);
-			 
-			    print_queue(q2);
-			 
-			     // Using lambda to compare elements.
-			    auto cmp = [](std::vector<int> left, std::vector<int> right) { return (left.size()) > (right.size()); };
-			    
-			    std::priority_queue<std::vector<int>, std::vector<std::vector<int>>, decltype(cmp)> q3(cmp);
-			 
-			    std::priority_queue<std::vector<int>, std::vector<std::vector<int>>, CompareVec> q4;
+			std::priority_queue<int> q;
 
-			    for(int n : {1,8,5,6,3,4,0,9,7,2}){
-			        q3.push(std::vector<int>(n));
-			        q4.push(std::vector<int>(n));
-			    }
+			for(int n : {1,8,5,6,3,4,0,9,7,2})
+				q.push(n);
 
-			    print_queue_2(q3);
-			    
-			    print_queue_2(q4);
+			print_queue(q);
+
+			std::priority_queue<int, std::vector<int>, std::greater<int> > q2;
+
+			std::priority_queue<int, std::vector<int>, decltype(&cmpa)> q5(&cmpa);
+
+			// std::priority_queue<int, std::vector<int>, decltype(cmpa)> q6(cmpa);
+
+			for(int n : {1,8,5,6,3,4,0,9,7,2}){
+				q2.push(n);
+				q5.push(n);
+				// q6.push(n);	
+			}
+
+			print_queue(q2);
+			print_queue(q5);
+			// print_queue(q6);
+
+				// Using lambda to compare elements.
+			auto cmp = [](std::vector<int> left, std::vector<int> right) { return (left.size()) > (right.size()); };
+
+			std::priority_queue<std::vector<int>, std::vector<std::vector<int>>, decltype(cmp)> q3(cmp);
+
+			std::priority_queue<std::vector<int>, std::vector<std::vector<int>>, CompareVec> q4;
+
+			for(int n : {1,8,5,6,3,4,0,9,7,2}){
+				q3.push(std::vector<int>(n));
+				q4.push(std::vector<int>(n));
+			}
+
+			print_queue_2(q3);
+
+			print_queue_2(q4);
 			}
 			```
 
