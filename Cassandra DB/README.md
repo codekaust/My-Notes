@@ -19,7 +19,7 @@ RDBMS provides a much organized storage of data than NoSQL. It is commonly said 
 
 2. Schema Easily Changeable: Also, NoSQL gives you facility of no fix schema having different structures for values of different keys, which makes things easy in scenarios like you need to add a new column in a table etc and fill with default values for all previous rows [expensive op].
 
-3. Built for Scale: Usually, horizontal scalability is pre-provided, and redundancy can be produced easily increasing availability.
+3. Built for Scale, Availability, Cost Effective [most NoSQL are free to use]: Usually, horizontal scalability is pre-provided, and redundancy can be produced easily increasing availability [due to distributed nature of most NoSQL dbs].
 
 4. Built for data aggregations / metrics / analytics.
 
@@ -35,4 +35,4 @@ RDBMS provides a much organized storage of data than NoSQL. It is commonly said 
  
  5. Joins are hard and expensive
 
- ## 
+ ![NoSQL](https://github.com/codekaust/My-Notes/tree/master/Cassandra%20DB/NoSQL.png)
