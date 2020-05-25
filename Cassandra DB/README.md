@@ -36,3 +36,6 @@ RDBMS provides a much organized storage of data than NoSQL. It is commonly said 
  5. Joins are hard and expensive
 
  ![NoSQL](https://raw.githubusercontent.com/codekaust/My-Notes/master/Cassandra%20DB/NoSQL.png)
+
+ #### Cassandra vs RDBMS
+![Cassandra vs RDBMS](https://raw.githubusercontent.com/codekaust/My-Notes/master/Cassandra%20DB/Cassandra_vs_RDBMS.png)
