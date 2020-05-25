@@ -15,8 +15,10 @@ Taken from [here](https://medium.com/mobile-development-group/simple-servers-cc4
 3. Use the `sockaddr_in` struct to get and store the details of the connection.
     * `sin_family`: Address family (`AF_INET`) 
     * `sin_port`: The port to use in 16-bit Network Byte Order (use `htons`)
-    * `sin_addr`: The IP address in 32-bit Network Byte Order (use `INADDR_ANY` to connect to any network interface or `INADDR_LOOPBACK` to connect to `127.0.0.1`)
+    * `sin_addr`: The IP address in 32-bit Network Byte Order (use `INADDR_ANY` to connect to any network interface or `INADDR_LOOPBACK` to connect to `127.0.0.1`). 
     * `sin_zero`: Set it to `0`
+
+> *Address in sin_addr in server tells, from which IP will the server receive connection? And in client, it is address of server where the client will send its request.*
 
 4. **Bind** the socket to the `IP:port`.
     * `Address`: The interface IP address to bind
