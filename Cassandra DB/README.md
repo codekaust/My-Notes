@@ -35,4 +35,4 @@ RDBMS provides a much organized storage of data than NoSQL. It is commonly said 
  
  5. Joins are hard and expensive
 
- ![NoSQL](https://github.com/codekaust/My-Notes/tree/master/Cassandra%20DB/NoSQL.png)
+ ![NoSQL](https://raw.githubusercontent.com/codekaust/My-Notes/master/Cassandra%20DB/NoSQL.png)
