@@ -1,5 +1,6 @@
 1. String functions: (char buffer[16] = {0}, string str;)
-	- isalnum(char c), isalpha(char c), isdigit(char c), tolower(char c)
+	- isalnum(char c), isalpha(char c), isdigit(char c)
+	- islower(char c), isupper(char c), tolower(char c), toupper(char c)
 	- strlen(buffer) //does according to at which index it finds '\0' (as basically buffer is just char*)
 	- cin>>buffer; //NOT PREFERRED: Can five stack-smashing-detected error.
 	- cin.get(buffer, 10) //when you want to read 10 chars 
@@ -8,15 +9,46 @@
 	- cin>>str; //get word
 	- getline(cin, str);
 	- char* abc = (char * )(str.c_str()); // str.c_str() = const char*
-	- convert b/w stirng and integer
+	- convert b/w string and integer
 		- string to integer
 			- https://www.geeksforgeeks.org/converting-strings-numbers-cc/
 		- integer to string
 			- to_string(int)
 
 2. Algorithm (#include<algorithm>) Functions: 
-	- sort(a.begin(), a.end())
-	- min(a,b), max(a,b)
+	- `sort(a.begin(), a.end())` **NOTE: You can also pass a comparator function object or function pointer. Just like priority queue `sort(a.begin(), a.end(), <comparator>)`**
+	- `min(a,b), max(a,b)`
+	- `transform(transform(A.begin(),A.end(),A.begin(),::tolower);)` 
+	**NOTE**: Last argument is function pointer ot function object.
+	```cpp
+		#include<iostream> 
+		#include<string>
+		using namespace std;
+
+		#include<algorithm>  //for
+
+		//transform all char to 0
+		int my_transformer(char &c){
+			//do nothing
+			return 0;
+		}
+
+		int main() {
+			string s = "abed", A;
+
+			A=s;
+			transform(A.begin(),A.end(),A.begin(), my_transformer);
+			cout<<A<<endl;
+
+			A=s;
+			transform(A.begin(),A.end(),A.begin(), &my_transformer);
+			cout<<A<<endl;
+
+			A=s;
+			transform(A.begin(),A.end(),A.begin(), ::tolower);
+			cout<<A<<endl;
+		}
+	```
 
 3. Imp headers to knw:
 	// #include<bits/stdc++.h> (GAWD)
