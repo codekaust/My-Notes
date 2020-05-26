@@ -1,11 +1,11 @@
-# Cassandra Database
 This document contains my notes on Cassandra db, with these resources:
 1. Videos: [1](https://www.youtube.com/watch?v=xQnIN9bW0og), [2](https://www.youtube.com/watch?v=iDhIjrJ7hG0)
-2. [Tutorials Point](https://www.tutorialspoint.com/cassandra/cassandra_architecture.htm)
+2. GS Doc
 2. [Documentation](https://cassandra.apache.org/doc/latest/)
 
+# General Intro to NoSQL
 ## Pros and Cons of RDBMS & NoSQL db
-RDBMS provides a much organized storage of data than NoSQL. It is commonly said that NoSQL is better in cases when the db size is huge, as RDBMS is expensive in such cases, but scalability is not the only factor.
+Cassandra is a NoSQL db. RDBMS provides a much organized storage of data than NoSQL. It is commonly said that NoSQL is better in cases when the db size is huge, as RDBMS is expensive in such cases, but scalability is not the only factor.
 
 ### 5 V's of Big Data:
 1. Volume
@@ -40,3 +40,21 @@ RDBMS provides a much organized storage of data than NoSQL. It is commonly said 
 
  ### Cassandra vs RDBMS
 ![Cassandra vs RDBMS](https://raw.githubusercontent.com/codekaust/My-Notes/master/Cassandra%20DB/Cassandra_vs_RDBMS.png)
+
+# Cassandra
+- Cassandra is massively scalable [offers linear scalability], distributed, open source, non-relational database.
+
+- **CAP** [Consistency, Availability, Partition Tolerance] Theorem states that in presence of network partition, one has to choose between Consistency and Availability. **Cassandra chose Availability**, so it offers very high availability and is eventually [after a while of data being written] consistent. 
+
+Availability is supported by **Active Everywhere Design** -> all nodes maybe read and written at.
+
+**Continuous Availability** eliminates single point of failure by redundancy in both data and node functioning.
+
+**CQL & Flexible-Dynamic data models**: Cassandra offers Cassandra Query Language [SQL like] and supports modern data types with fast read write.
+
+## Cassandra Architecture
+- Architecture reason for ability to scale, perform, and offer continuous uptime. 
+- Has a master-less “ring” design, and not legacy master-slave or a manual and difficult-to-maintain sharded architecture.
+- All nodes play an identical role; no concept of a master node; all nodes communicating with each other equally.
+- This built-for-scale architecture means that it is capable of handling large amounts of data and thousands of concurrent users or operations per second— even across multiple data centers— as easily as it can manage much smaller amounts of data and user traffic. 
+- Unlike other master-slave or sharded systems, it has no single point of failure and therefore is capable of offering true continuous availability and uptime — simply add new nodes to an existing cluster without having to take it down.
