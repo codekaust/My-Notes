@@ -151,3 +151,77 @@ Some other imp points:
 1. `sudo systemctl status/start/stop/restart/enable/disable cassandra` [enable / disable used to make cassandra start / not-start on startup]
 2. Cassandra has some issues running with java versions > 8. So to use java 8, install it and `sudo update-alternatives --config java` to change what version you will use now on.
 3. These commands can also be of use: I) `sudo nodetool status`. II) `cqlsh`
+
+# CQLSH [Cassandra Query Language Shell]
+Using cqlsh, you can define a schema, insert data, and execute a query. To start CQLSH use command `cqlsh`. Some important options:
+|Option|Usage|
+|-|-|
+|cqlsh --{color/no-color}|Directs the shell to use colored/non-coloured output.|
+|cqlsh --execute <cql_stmt>|Executes statement and exit|
+|cqlsh --file <file_name>|Execute statement from file and exit|
+|cqlsh -u <user_name>|Authenticate a user. Default user: cassandra.|
+|cqlsh -p <password>|Use it with `-u` to auth user with password. Default pass: cassandra.|
+
+## Shell Commands
+Given below are the Cqlsh documented shell commands. These are the commands used to perform tasks such as displaying help topics, exit from cqlsh, describe,etc.
+
+HELP − Displays help topics for all cqlsh commands.
+
+CAPTURE − Captures the output of a command and adds it to a file.
+
+CONSISTENCY − Shows the current consistency level, or sets a new consistency level.
+
+COPY − Copies data to and from Cassandra.
+
+DESCRIBE − Describes the current cluster of Cassandra and its objects.
+
+EXPAND − Expands the output of a query vertically.
+
+EXIT − Using this command, you can terminate cqlsh.
+
+PAGING − Enables or disables query paging.
+
+SHOW − Displays the details of current cqlsh session such as Cassandra version, host, or data type assumptions.
+
+SOURCE − Executes a file that contains CQL statements.
+
+TRACING − Enables or disables request tracing.
+
+### CQL Data Definition Commands
+
+CREATE KEYSPACE − Creates a KeySpace in Cassandra.
+
+USE − Connects to a created KeySpace.
+
+ALTER KEYSPACE − Changes the properties of a KeySpace.
+
+DROP KEYSPACE − Removes a KeySpace
+
+CREATE TABLE − Creates a table in a KeySpace.
+
+ALTER TABLE − Modifies the column properties of a table.
+
+DROP TABLE − Removes a table.
+
+TRUNCATE − Removes all the data from a table.
+
+CREATE INDEX − Defines a new index on a single column of a table.
+
+DROP INDEX − Deletes a named index.
+
+### CQL Data Manipulation Commands
+
+INSERT − Adds columns for a row in a table.
+
+UPDATE − Updates a column of a row.
+
+DELETE − Deletes data from a table.
+
+BATCH − Executes multiple DML statements at once.
+
+CQL Clauses
+SELECT − This clause reads data from a table
+
+WHERE − The where clause is used along with select to read a specific data.
+
+ORDERBY − The orderby clause is used along with select to read a specific data in a specific order.
