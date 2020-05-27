@@ -39,7 +39,7 @@ Cassandra is a NoSQL db. RDBMS provides a much organized storage of data than No
  ![NoSQL](https://raw.githubusercontent.com/codekaust/My-Notes/master/Cassandra%20DB/pictures/NoSQL.png)
 
  ### Cassandra vs RDBMS
-![Cassandra vs RDBMS](https://raw.githubusercontent.com/codekaust/My-Notes/master/Cassandra%20DB/pictures/Cassandra_vs_RDBMS.png)
+![Cassandra vs RDBMS](https://raw.githubusercontent.com/codekaust/My-Notes/master/Cassandra%20DB/pictures/General-Cassandra_vs_RDBMS.png)
 
 # Cassandra
 - Cassandra is massively scalable [offers linear scalability], distributed, open source, non-relational database.
@@ -135,3 +135,19 @@ NOTE: Primary, Partition, Clustering key to be declared at time of table creatio
 |Row is an individual record in RDBMS.|Row is a unit of replication in Cassandra.|
 |Column represents the attributes of a relation.|Column is a unit of storage in Cassandra.|
 RDBMS supports the concepts of foreign keys, joins.|Relationships are represented using collections.|
+
+# Cassandra Installation
+Cassandra can be accessed using `cqlsh`[CQL Shell] as well as drivers of different languages. Here, we will only focus on cqlsh.
+
+So there are many installation guides to install Cassandra in your local machine. I ended up using the following commands from [official download page](https://cassandra.apache.org/download/):
+```bash
+echo "deb https://downloads.apache.org/cassandra/debian 311x main" | sudo tee -a /etc/apt/sources.list.d/cassandra.sources.list
+curl https://downloads.apache.org/cassandra/KEYS | sudo apt-key add -
+sudo apt-get update
+sudo apt-get install cassandra
+```
+
+Some other imp points:
+1. `sudo systemctl status/start/stop/restart/enable/disable cassandra` [enable / disable used to make cassandra start / not-start on startup]
+2. Cassandra has some issues running with java versions > 8. So to use java 8, install it and `sudo update-alternatives --config java` to change what version you will use now on.
+3. These commands can also be of use: I) `sudo nodetool status`. II) `cqlsh`
