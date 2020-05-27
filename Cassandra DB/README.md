@@ -147,7 +147,7 @@ sudo apt-get update
 sudo apt-get install cassandra
 ```
 
-Some other imp points:
+Some other imp points: 
 1. `sudo systemctl status/start/stop/restart/enable/disable cassandra` [enable / disable used to make cassandra start / not-start on startup]
 2. Cassandra has some issues running with java versions > 8. So to use java 8, install it and `sudo update-alternatives --config java` to change what version you will use now on.
 3. These commands can also be of use: I) `sudo nodetool status`. II) `cqlsh`
