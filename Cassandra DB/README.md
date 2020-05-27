@@ -96,8 +96,9 @@ Like rdbms table; but can hold vast amount of data + fast row insert and column 
 
 |Relational Table|	Cassandra column Family|
 |-|-|
-|A schema in a relational model is fixed. Once we define certain columns for a table, while inserting data, in every row all the columns must be filled at least with a null value.|Although the column families are defined, the columns are not. You can freely add any column to any column family at any time.|
-|Relational tables define only columns and the user fills in the table with values.|A table contains columns, or can be defined as a super column family.|
+|A schema in a relational model is fixed. Once we define certain columns for a table, while inserting data, in every row all the columns must be filled at least with a null value.|Although the column families are defined, the columns are not. You can freely add any column to any column family at any time.Cassandra is somewhat a nested sorted map data structure.|
+|Relational tables define only columns and the user fills in the table with values.|A table contains columns, or can be defined as a super column family. |
+
 
 ![Column_Family](https://raw.githubusercontent.com/codekaust/My-Notes/master/Cassandra%20DB/pictures/Column_Family.png)
 
@@ -106,15 +107,31 @@ Attributes:
 2. *rows_cached* − It represents the number of rows whose entire contents will be cached in memory.
 3. *preload_row_cache* − It specifies whether you want to pre-populate the row cache.
 
-### Column
-Basic data str.; has name, value, timestamp
+### Column & Super Column
+Basic data str.; key value pair; has name, value, timestamp.
+
 ![Column](https://raw.githubusercontent.com/codekaust/My-Notes/master/Cassandra%20DB/pictures/Column.png)
 
+**Super Column** is a special column, and thus key-value pair with value as *map of sub-columns*. Used to optimize performance keeping columns likely to be queried together in one map, and thus super column.
 
-3. **Primary Key:** Identifies rows uniquely in *a table*. Distributes a table's rows across multiple nodes in cluster.
-4. **Partition Key:** Key on which data partitioned across nodes.
-5. **Clustering Keys:** Key on which data is clustered on a node.
+![Column](https://raw.githubusercontent.com/codekaust/My-Notes/master/Cassandra%20DB/pictures/Super_Column.png)
 
-This seems quite like a rdbms, *its made to look so but is not*. Its something like a nested sorted map data structure.
+### Some Important Keys
+1. **Primary Key:** Identifies rows uniquely in *a table*. Distributes a table's rows across multiple nodes in cluster.
+2. **Partition Key:** Key on which data partitioned across nodes.
+3. **Clustering Keys:** Key on which data is clustered on a node.
 
 NOTE: Primary, Partition, Clustering key to be declared at time of table creation itself.
+
+### Cassandra vs RDBMS in Data Model
+
+|RDBMS|Cassandra|
+|-|-|
+|RDBMS deals with structured data.|Cassandra deals with unstructured data.|
+|It has a fixed schema.|Cassandra has a flexible schema.|
+|In RDBMS, a table is an array of arrays. (ROW x COLUMN)	|In Cassandra, a table is a list of “nested key-value pairs”. (ROW x COLUMN key x COLUMN value)|
+|Database is the outermost container that contains data corresponding to an application.|Keyspace is the outermost container that contains data corresponding to an application.|
+|Tables are the entities of a database.|Tables or column families are the entity of a keyspace.|
+|Row is an individual record in RDBMS.|Row is a unit of replication in Cassandra.|
+|Column represents the attributes of a relation.|Column is a unit of storage in Cassandra.|
+RDBMS supports the concepts of foreign keys, joins.|Relationships are represented using collections.|
