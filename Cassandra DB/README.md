@@ -1,6 +1,6 @@
 This document contains my notes on Cassandra db, with these resources:
 1. Videos: [1](https://www.youtube.com/watch?v=xQnIN9bW0og), [2](https://www.youtube.com/watch?v=iDhIjrJ7hG0)
-2. Blogs & Related: [Simplilearn](https://www.simplilearn.com/cassandra-architecture-tutorial-video), [Tutorials Point](https://www.tutorialspoint.com/cassandra/cassandra_architecture.htm), [DZone](https://dzone.com/articles/introduction-apache-cassandras)
+2. Blogs & Related: [Simplilearn](https://www.simplilearn.com/cassandra-architecture-tutorial-video), [Tutorials Point](https://www.tutorialspoint.com/cassandra/cassandra_data_model.htm), [DZone](https://dzone.com/articles/introduction-apache-cassandras)
 3. [Documentation](https://cassandra.apache.org/doc/latest/)
 
 # General Intro to NoSQL
@@ -36,10 +36,10 @@ Cassandra is a NoSQL db. RDBMS provides a much organized storage of data than No
  
  5. Joins are hard and expensive
 
- ![NoSQL](https://raw.githubusercontent.com/codekaust/My-Notes/master/Cassandra%20DB/NoSQL.png)
+ ![NoSQL](https://raw.githubusercontent.com/codekaust/My-Notes/master/Cassandra%20DB/pictures/NoSQL.png)
 
  ### Cassandra vs RDBMS
-![Cassandra vs RDBMS](https://raw.githubusercontent.com/codekaust/My-Notes/master/Cassandra%20DB/Cassandra_vs_RDBMS.png)
+![Cassandra vs RDBMS](https://raw.githubusercontent.com/codekaust/My-Notes/master/Cassandra%20DB/pictures/Cassandra_vs_RDBMS.png)
 
 # Cassandra
 - Cassandra is massively scalable [offers linear scalability], distributed, open source, non-relational database.
@@ -68,9 +68,49 @@ You can use the resources and get comfortable with following concepts for better
 6. Gossip Protocol, Hashing
 
 
-## Cassandra Data Objects
-1. **Keyspace:** Container for data tables [column families] and indices; like a db in rdbms. Level at which replication is defined [and thus done].
-2. **Table:** Like rdbms table; collection of rows [but can hold vast amount of data + fast row insert and column level read]. 
+## Cassandra Data Model
+### Cluster
+Cassandra db is distributed over several machines [for reasons like availability, failure handling, etc]. The outermost container, which can contain multiple machines [*nodes*], is called a **Cluster**. Cassandra arranges *nodes* like a ring in a *cluster*.
+
+### Keyspace
+Outermost container for data; contains data tables [column families] and indices; like a db in rdbms. Level at which replication is defined [and thus done].
+Attributes:
+1. Replication Factor
+2. Replica Placement Strategy: simple strategy (rack-aware strategy), network topology strategy (data center shared strategy)
+3. Column Families: At least one and often many column families.
+
+![Keyspace](https://raw.githubusercontent.com/codekaust/My-Notes/master/Cassandra%20DB/pictures/Keyspace.png)
+
+*Syntax for Keyspace creation:*
+```SQL
+CREATE KEYSPACE Keyspace name
+WITH replication = {'class': 'SimpleStrategy', 'replication_factor' : 3};
+```
+
+### Column Family
+Container of a collection of rows; each row contains ordered columns.
+
+Column families represent the structure of your data.
+
+Like rdbms table; but can hold vast amount of data + fast row insert and column level read.
+
+|Relational Table|	Cassandra column Family|
+|-|-|
+|A schema in a relational model is fixed. Once we define certain columns for a table, while inserting data, in every row all the columns must be filled at least with a null value.|Although the column families are defined, the columns are not. You can freely add any column to any column family at any time.|
+|Relational tables define only columns and the user fills in the table with values.|A table contains columns, or can be defined as a super column family.|
+
+![Column_Family](https://raw.githubusercontent.com/codekaust/My-Notes/master/Cassandra%20DB/pictures/Column_Family.png)
+
+Attributes:
+1. *keys_cached* − It represents the number of locations to keep cached per SSTable.
+2. *rows_cached* − It represents the number of rows whose entire contents will be cached in memory.
+3. *preload_row_cache* − It specifies whether you want to pre-populate the row cache.
+
+### Column
+Basic data str.; has name, value, timestamp
+![Column](https://raw.githubusercontent.com/codekaust/My-Notes/master/Cassandra%20DB/pictures/Column.png)
+
+
 3. **Primary Key:** Identifies rows uniquely in *a table*. Distributes a table's rows across multiple nodes in cluster.
 4. **Partition Key:** Key on which data partitioned across nodes.
 5. **Clustering Keys:** Key on which data is clustered on a node.
