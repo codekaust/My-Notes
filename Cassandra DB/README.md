@@ -114,7 +114,7 @@ Basic data str.; key value pair; has name, value, timestamp.
 
 **Super Column** is a special column, and thus key-value pair with value as *map of sub-columns*. Used to optimize performance keeping columns likely to be queried together in one map, and thus super column.
 
-![Column](https://raw.githubusercontent.com/codekaust/My-Notes/master/Cassandra%20DB/pictures/Super_Column.png)
+![Super_Column](https://raw.githubusercontent.com/codekaust/My-Notes/master/Cassandra%20DB/pictures/Super_Col.png)
 
 ### Some Important Keys
 1. **Primary Key:** Identifies rows uniquely in *a table*. Distributes a table's rows across multiple nodes in cluster.
