@@ -1,6 +1,6 @@
-*/**/.ipynb_checkpoints
+**/.ipynb_checkpoints
 LearningGAN/img/
 *.swp
 *.swo
-*/**/*.out
-*/**/.vscode/
+**/*.out
+**/.vscode/
