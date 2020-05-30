@@ -12,6 +12,17 @@
 	- convert b/w string and integer
 		- string to integer
 			- https://www.geeksforgeeks.org/converting-strings-numbers-cc/
+			```cpp
+			string s = "12345"; 
+  
+			// object from the class stringstream 
+			stringstream geek(s); 
+		
+			// The object has the value 12345 and stream 
+			// it to the integer x 
+			int x = 0; 
+			geek >> x; 
+			```
 		- integer to string
 			- to_string(int)
 
