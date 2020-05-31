@@ -53,7 +53,7 @@ Availability is supported by **Active Everywhere Design** -> all nodes maybe rea
 **CQL & Flexible-Dynamic data models**: Cassandra offers Cassandra Query Language [SQL like] and supports modern data types with fast read write.
 
 ## Cassandra Architecture
-- Architecture reason for ability to scale, perform, and offer continuous uptime. 
+- Architecture is the reason for ability to scale, perform, and offer continuous uptime. 
 - Has a master-less “ring” design, and not legacy master-slave or a manual and difficult-to-maintain sharded architecture.
 - All nodes play an identical role; no concept of a master node; all nodes communicating with each other equally.
 - This built-for-scale architecture means that it is capable of handling large amounts of data and thousands of concurrent users or operations per second— even across multiple data centers— as easily as it can manage much smaller amounts of data and user traffic. 

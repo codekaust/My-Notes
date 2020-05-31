@@ -11,6 +11,7 @@
 	- char* abc = (char * )(str.c_str()); // str.c_str() = const char*
 	- convert b/w string and integer
 		- string to integer
+			- atoi(string.c_str());
 			- https://www.geeksforgeeks.org/converting-strings-numbers-cc/
 		- integer to string
 			- to_string(int)
