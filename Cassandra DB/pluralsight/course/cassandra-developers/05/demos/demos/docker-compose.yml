@@ -1,0 +1,9 @@
+version: '3'
+services:
+  n1:
+    build: .
+    image: cassandra-with-cqlshrc
+    networks:
+      - cluster
+networks:
+  cluster:

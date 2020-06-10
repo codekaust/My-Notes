@@ -1,0 +1,87 @@
+To setup your environment (on Mac & Windows)
+
+	(1) Install Docker Desktop Community Edition (https://www.docker.com/products/docker-desktop)
+  (2) Click on the Docker task tray/bar icon, choose Settings > Advanced
+	(3) Increase Memory to 4096 MB and Swap to 1536 MB
+
+-----
+
+To deploy a single Cassandra node to this docker host, run this command:
+
+  cd single-dc
+  docker-compose up -d n1
+
+Check the status of the cluster by running:
+
+  docker-compose exec n1 nodetool status
+
+Keep checking this until the status is "UN" (Up & Normal)
+
+To add a second node to the Cassandra cluster, run this command:
+
+	docker-compose up -d n2
+
+Check the status of the cluster by running:
+
+  docker-compose exec n1 nodetool status
+
+Keep checking this until the status of all nodes is "UN" (Up & Normal)
+
+To add a third node to the cluster, run a command similar to the last:
+
+  docker-compose up -d n3
+
+Check again with "nodetool status" until all 3 nodes are "up" and "normal"
+
+You can view the virtual node token allocations by running:
+
+	docker-compose exec n1 nodetool ring
+
+You can log into one of the containers and view the configuration file with:
+
+	docker-compose exec n1 more /etc/cassandra/cassandra.yaml
+
+When you're done, stop and remove the Cassandra containers with:
+
+	docker-compose down
+
+-----
+
+To deploy a single Cassandra node, specifying a datacenter and rack:
+
+  cd multi-dc
+  docker-compose up -d n1
+
+Check the status of the cluster by running:
+
+  docker-compose exec n1 nodetool status
+
+Keep checking this until the status is "UN" (Up & Normal)
+
+To add a second node in a different rack:
+
+	docker-compose up -d n2
+
+Check the status of the cluster by running:
+
+  docker-compose exec n1 nodetool status
+
+Keep checking this until the status of all nodes is "UN" (Up & Normal)
+
+To add a third node in a different datacenter:
+
+	 docker-compose up -d n3
+
+Check again with "nodetool status" until all 3 nodes are "up" and "normal"
+
+To view the configuration file where the datacenter and rack info is stored:
+
+	docker-compose exec n3 bash
+	more /etc/cassandra/cassandra-rackdc.properties
+	exit
+
+You can run 'nodetool status' and 'nodetool ring' as before
+
+When you're done, stop and remove the containers as before
+
+   docker-compose down

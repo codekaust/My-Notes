@@ -1,0 +1,260 @@
+Start up a single-node of Cassandra with:
+
+    docker-compose up -d
+
+Load user data by running a series of CQL commands from an external file
+
+    cat scripts/m3/users.cql | docker-compose exec -T n1 cqlsh
+
+Run cqlsh with:
+
+    docker-compose exec n1 cqlsh
+
+Add a "company" column to the users table, and set it for John Doe
+
+    use pluralsight;
+    alter table users add company varchar;
+    update users set company = 'Acme Corp' where id = 'john-doe';
+
+Try to specify "company" in a where clause, and it won't work
+
+    select * from users where company = 'Acme Corp';
+
+Create a materialized view to access users by company:
+
+    create materialized view users_by_company as
+    select * from users
+    where company is not null
+    primary key (company, id);
+
+Try selecting Acme Corp users again, but this time from the materialized view
+
+    select * from users_by_company where company = 'Acme Corp';
+
+Create an index on the company column of the users table, and re-run the select statement
+
+    create index on users(company);
+    select * from users where company = 'Acme Corp';
+
+Turn on tracing, re-run each select statement (scroll back to see how many nodes are involved):
+
+    tracing on
+    select * from users_by_company where company = 'Acme Corp';
+    select * from users where company = 'Acme Corp';
+    tracing off
+
+Add a "tags" set column to the users table, and add some entries for John Doe
+
+    alter table users add tags set<varchar>;
+    update users set tags = {'java','database','open-source'} where id = 'john-doe';
+
+Try to specify "tags" in a where clause, and it won't work
+
+    select * from users where tags contains 'java';
+
+Create an index on the tags column of the users table, and re-run the select statement
+
+    create index on users(tags);
+    select * from users where tags contains 'java';
+
+Exit cqlsh and shut down our Cassandra node
+
+    exit
+    docker-compose down
+
+-----
+
+Start up a single-node of Cassandra with:
+
+    docker-compose up -d
+
+Load the full course data from the last module
+
+    cat scripts/m5/courses.cql | docker-compose exec -T n1 cqlsh
+
+Run cqlsh with:
+
+    docker-compose exec n1 cqlsh
+
+Add a "tags" static set column to the courses table
+
+    use pluralsight;
+    alter table courses add tags set<varchar> static;
+
+Create a separate table to act as an "index table", organizing courses by tag
+
+    create table course_tags (
+      tag varchar,
+      course_id varchar,
+      primary key (tag, course_id)
+    );
+
+Add some tags to a course in the "courses" table, and the corresponding entries in the "course_tags" table in a batch
+
+    begin batch
+    update courses set tags = {'developer','open-source'} where id = 'nodejs-big-picture';
+    insert into course_tags (tag, course_id) values ('developer','nodejs-big-picture');
+    insert into course_tags (tag, course_id) values ('open-source','nodejs-big-picture');
+    apply batch
+
+    select * from course_tags where tag = 'developer';
+
+Exit cqlsh
+
+    exit
+
+Examine the "courses.cql" and "courses_tags.cql" in the m6 directory for examples of unlogged and regular batches respectively.
+
+Shutdown our Cassandra node:
+
+    docker-compose down
+
+-----
+
+Start up a single-node of Cassandra with:
+
+    docker-compose up -d
+
+Load user data by running a series of CQL commands from an external file
+
+    cat scripts/m3/users.cql | docker-compose exec -T n1 cqlsh
+
+Run cqlsh with:
+
+    docker-compose exec n1 cqlsh
+
+Attempt to insert a new user into the users table, but only if the id doesn't already exist (it does)
+
+    use pluralsight;
+    insert into users (id, first_name, last_name) values ('john-doe','Johnny', 'Doe') if not exists;
+
+Verify that the user wasn't "upserted"
+
+    select * from users where id = 'john-doe';
+
+Set the "reset_token" value for John Doe and see what we have
+
+    update users set reset_token = '1GRhEs1' where id = 'john-doe';
+    select id, password, reset_token from users;
+
+Try to update the password and clear the reset token, but with an incorrect reset token (and watch it fail)
+
+    update users set password = 'newpassword', reset_token = null where id = 'john-doe' if reset_token = 'wrong';
+
+Now try it again with the correct reset token (and watch it succeed)
+
+    update users set password = 'newpassword', reset_token = null where id = 'john-doe' if reset_token = '1GRhEs1';
+
+Verify that it was changed:
+
+    select password from users where id = 'john-doe';
+
+Exit cqlsh and shutdown our Cassandra node:
+
+    exit
+    docker-compose down
+
+----
+
+Start up a single-node of Cassandra with:
+
+    docker-compose up -d
+
+Load the full course data:
+
+    cat scripts/m6/courses.cql | docker-compose exec -T n1 cqlsh
+
+Run cqlsh with:
+
+    docker-compose exec n1 cqlsh
+
+Use pluralsight and create our UDF:
+
+    use pluralsight;
+
+    create or replace function asTimeStr(duration int, show_sec boolean)
+    returns null on null input
+    returns text
+    language java as $$
+      java.time.Duration d = java.time.Duration.ofSeconds(duration);
+      long hours = d.toHours();
+      d = d.minusHours(hours);
+      long minutes = d.toMinutes();
+      d = d.minusMinutes(minutes);
+      long seconds = d.getSeconds();
+      return String.format("%s%s%s",
+        (hours > 0 ? hours + " h " : ""),
+        minutes + " m",
+        show_sec ? " " + seconds + " s" : "");
+    $$;
+
+Use this function to format the time of a specific module:
+
+    select module_name, asTimeStr(module_duration, true)
+    from courses where id = 'advanced-javascript' and module_id = 1;
+
+This UDF can also be combined with other functions:
+
+    select module_name, asTimeStr(sum(module_duration), false)
+    from courses where id = 'advanced-javascript';
+
+Create our course_page_views table and insert some sample data
+
+    create table course_page_views (
+        course_id varchar,
+        view_id timeuuid,
+        primary key (course_id, view_id)
+    ) with clustering order by (view_id desc);
+
+    insert into course_page_views (course_id, view_id)
+    values ('advanced-javascript', minTimeuuid('2019-12-20 03:02'));
+
+    insert into course_page_views (course_id, view_id)
+    values ('advanced-javascript', minTimeuuid('2019-12-20 03:11'));
+
+    insert into course_page_views (course_id, view_id)
+    values ('advanced-javascript', minTimeuuid('2019-12-20 03:32'));
+
+    insert into course_page_views (course_id, view_id)
+    values ('advanced-javascript', minTimeuuid('2019-12-20 03:57'));
+
+    insert into course_page_views (course_id, view_id)
+    values ('advanced-javascript', minTimeuuid('2019-12-20 10:29'));
+
+    insert into course_page_views (course_id, view_id)
+    values ('advanced-javascript', minTimeuuid('2019-12-20 10:42'));
+
+Define our state function (no final function necessary in this case):
+Conversion adapted from https://support.datastax.com/hc/en-us/articles/204226019-Converting-TimeUUID-Strings-to-Dates
+
+    create or replace function hourlyState(state map<int,bigint>, val timeuuid)
+    called on null input
+    returns map<int,bigint>
+    language java
+    as $$
+      long NUM_100NS_INTERVALS_SINCE_UUID_EPOCH = 0x01b21dd213814000L;
+      if (val != null) {
+        Date date = new Date((val.timestamp() - NUM_100NS_INTERVALS_SINCE_UUID_EPOCH) / 10000);
+        Calendar.Builder builder = new Calendar.Builder();
+        Calendar cal = builder.setInstant(date).build();
+        int hour = cal.get(Calendar.HOUR);
+        state.put(hour, state.containsKey(hour) ? state.get(hour)+1 : 1);
+      }
+      return state;
+    $$;
+
+Define our aggregate function:
+
+    create or replace aggregate hourly(timeuuid)
+    sfunc hourlyState
+    stype map<int,bigint>
+    initcond { };
+
+Try using our new user define aggregate function:
+
+    select course_id, hourly(view_id) from course_page_views where course_id = 'advanced-javascript';
+
+Exit cqlsh and shutdown our Cassandra node:
+
+    exit
+    docker-compose down;

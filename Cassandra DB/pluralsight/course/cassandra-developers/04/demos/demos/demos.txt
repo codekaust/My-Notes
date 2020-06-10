@@ -1,0 +1,209 @@
+Start up a single-node of Cassandra with:
+
+    docker-compose up -d
+
+Run cqlsh with:
+
+    docker-compose exec n1 cqlsh
+
+Create a keyspace with:
+
+    create keyspace pluralsight with replication = {'class':'SimpleStrategy', 'replication_factor':1};
+
+Create a table in this keyspace with:
+
+    use pluralsight;
+    create table courses (id varchar primary key);
+
+Optionally attempt to create the table again with:
+
+    create table if not exists courses (id varchar primary key);
+
+(and note that you will not get an error as long as the 'if not exists' is present)
+
+Add a few columns to the courses table with:
+
+    alter table courses add duration int;
+    alter table courses add released timestamp;
+    alter table courses add author varchar;
+
+Add a comment to the table with:
+
+    alter table courses with comment = 'A table of courses';
+
+View the complete table and all its default properties with:
+
+    desc table courses;
+
+Drop and recreate a more complete courses table with:
+
+    drop table courses;
+    create table courses (
+        id varchar primary key,
+        name varchar,
+        author varchar,
+        audience int,
+        duration int,
+        cc boolean,
+        released timestamp
+        ) with comment = 'A table of courses';
+
+(Note that when entering the lines as above cqlsh will automatically detect a multi-line CQL statement)
+
+View the completed table one last time:
+
+    desc table courses;
+
+Exit cqlsh:
+
+    exit
+
+-----
+
+Load course data by running a series of CQL commands from an external file
+
+    cat scripts/m3/courses.cql | docker-compose exec -T n1 cqlsh
+
+Run cqlsh with:
+
+    docker-compose exec n1 cqlsh
+
+Verify that the CQL commands in the file were indeed executed:
+
+    use pluralsight;
+    desc tables;
+    select * from courses;
+
+(The 'desc tables' should show a single 'courses' table, and the 'select' statement should show 5 rows of sample data.)
+
+The 'expand' cqlsh command will display the query results in a 'one column per line' format:
+
+    expand on;
+    select * from courses;
+    expand off;
+
+-----
+
+You can display the time a piece of data was written with the 'writetime' function:
+
+    select id, cc, writetime(cc) from courses where id = 'advanced-javascript';
+
+We can update this cc column with an 'update' statement:
+
+    update courses set cc = true where id = 'advanced-javascript';
+
+Now re-run the select statement containing the 'writetime' function and notice that the time has changed.
+You can prove to yourself that this write time is stored on a per column basis by selecting this for a different column:
+
+    select id, name, writetime(name) from courses where id = 'advanced-javascript';
+
+Note that this writetime value is the same as the one returned by our first 'cc' query.
+
+-----
+
+Cassandra also provides a function for returning the token associated with a partition key:
+
+    select id, token(id) from courses;
+
+-----
+
+If you try to select from a column other than the primary key, you'll get an error:
+
+    select * from courses where author = 'Cory House';
+
+(We'll show how to do this in a later module.)
+
+-----
+
+Let's create a users table:
+
+    create table users (
+        id varchar primary key,
+        first_name varchar,
+        last_name varchar,
+        email varchar,
+        password varchar
+        ) with comment = 'A table of users';
+
+Then we'll insert and "upsert" two rows of data:
+
+    insert into users (id, first_name, last_name) values ('john-doe', 'John', 'Doe');
+    update users set first_name = 'Jane', last_name = 'Doe' where id = 'jane-doe';
+    select * from users;
+
+(Note that the net effect of the insert and update are the same.)
+
+Now we'll add a new 'reset_token' column to this table, and add a value to this column with a TTL:
+
+    alter table users add reset_token varchar;
+    update users using ttl 120 set reset_token = 'abc123' where id = 'john-doe';
+
+We can retrieve the time remaining for a ttl with the 'ttl' query function:
+
+    select ttl(reset_token) from users where id = 'john-doe';
+
+We can turn on tracing and do a select to see that there are currently no tombstones:
+
+    tracing on;
+    select * from users where id = 'john-doe';
+
+(Re-run this several times until the 2 minutes have elasped and the token_value will be gone, and tracing will show a tombstone.)
+
+Turn off tracing:
+
+    tracing off;
+-----
+
+Create a ratings table with two counter columns:
+
+    create table ratings (
+        course_id varchar primary key,
+        ratings_count counter,
+        ratings_total counter
+        ) with comment = 'A table of course ratings';
+
+Now let's increment both counter columns to represent receiving a new course rating of 4:
+
+    update ratings set ratings_count = ratings_count + 1, ratings_total = ratings_total + 4 where course_id = 'nodejs-big-picture';
+    select * from ratings;
+
+(The select should show the data we just upserted.)
+
+Now let's add a second course rating of 3:
+
+    update ratings set ratings_count = ratings_count + 1, ratings_total = ratings_total + 3 where course_id = 'nodejs-big-picture';
+    select * from ratings;
+    exit
+
+This should show the new values of "2" and "7" for ratings_count and ratings_total respectively.
+
+Drop and re-create "ratings" to use with the "avg" aggregate function
+
+    drop table ratings;
+
+    create table ratings (
+        course_id varchar,
+        user_id varchar,
+        rating int,
+        primary key (course_id, user_id)
+    );
+
+Insert a few sample ratings
+
+    insert into ratings (course_id, user_id, rating) values ('cassandra-developers', 'user1', 4);
+    insert into ratings (course_id, user_id, rating) values ('cassandra-developers', 'user2', 5);
+    insert into ratings (course_id, user_id, rating) values ('cassandra-developers', 'user3', 4);
+    insert into ratings (course_id, user_Id, rating) values ('advanced-python', 'user1', 5);
+
+You can select the average for a single course (across users):
+
+    select course_id, avg(rating) from ratings where course_id = 'cassandra-developers';
+    select course_id, avg(rating) from ratings where course_id = 'advanced-python';
+
+However, you can't apply aggregate functions across partition keys:
+
+    select course_id, avg(rating) from courses;  // incorrect results
+
+Stop and remove the docker container:
+
+    docker-compose down

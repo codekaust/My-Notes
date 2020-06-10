@@ -1,0 +1,24 @@
+version: '3'
+services:
+  n1:
+    image: cassandra:3.11
+    networks:
+      - cluster
+  n2:
+    image: cassandra:3.11
+    networks:
+      - cluster
+    environment:
+      - CASSANDRA_SEEDS=n1
+    depends_on:
+      - n1
+  n3:
+    image: cassandra:3.11
+    networks:
+      - cluster
+    environment:
+      - CASSANDRA_SEEDS=n1
+    depends_on:
+      - n1
+networks:
+  cluster:

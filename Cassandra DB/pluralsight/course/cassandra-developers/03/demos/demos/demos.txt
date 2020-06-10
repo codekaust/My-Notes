@@ -1,0 +1,235 @@
+** Before starting, be sure you've changed the Docker memory settings, as outlined in the previous module
+
+Create a three node cluster:
+
+   cd single-dc
+   docker-compose up -d
+
+ This may take a while to start-up all three nodes.  You can watch the logs of one of the nodes:
+
+    docker-compose logs -f n3
+    (Look for "Starting listening for CQL clients", then Ctrl-C to exit)
+
+Run cqlsh with:
+
+    docker-compose exec n1 cqlsh
+
+Create a keyspace by entering this CQL at the cqlsh> prompt:
+
+    create keyspace pluralsight with replication = {'class':'SimpleStrategy', 'replication_factor':3};
+    exit
+
+Examine the token allocations for this keyspace by exiting cqlsh and running a new nodetool command:
+
+    docker-compose exec n1 nodetool describering pluralsight
+
+Run nodetool status, supplying the name of the keyspace, and notice that each node "owns" 100% of the data:
+
+    docker-compose exec n1 nodetool status pluralsight
+
+Now run cqlsh again and drop and recreate the keyspace with a different replication factor:
+
+    docker-compose exec n1 cqlsh
+
+    drop keyspace pluralsight;
+    create keyspace pluralsight with replication = {'class':'SimpleStrategy', 'replication_factor':1};
+    exit
+
+Run nodetool status again and notice that now each node only "owns" about a third of the data:
+
+    docker-compose exec n1 nodetool status pluralsight
+
+Run nodetool describering again and notice that each token range is only allocated one endpoint:
+
+    docker-compose exec n1 nodetool describering pluralsight
+
+Take one of the end_token values from these results and find it in the nodetool ring output:
+
+    docker-compose exec n1 nodetool ring | grep [end_token]
+
+(where [end_token] is an end_token value taken from the results of nodetool describering)
+Note that the IP address is same as the end_point found in the "nodetool describering" output
+
+Stop and remove each of your docker containers:
+
+    docker-compose down
+
+-----
+
+Create a multi-DC cluster as described in module 1, placing nodes in the following data centers and racks:
+
+    cd multi-dc
+    docker compose up -d
+
+This may take a while to start-up all four nodes.  You can watch the logs of one of the nodes:
+
+    docker-compose logs -f n4
+    (Look for "Starting listening for CQL clients", then Ctrl-C to exit)
+
+Run "nodetool status" to see the nodes distributed between datacenters and racks
+
+    docker-compose exec n1 nodetool status
+
+Run cqlsh with:
+
+    docker-compose exec n1 cqlsh
+
+Create the pluralsight keyspace again, but this time with a different replication strategy:
+
+    create keyspace pluralsight with replication = {'class':'NetworkTopologyStrategy','DC1':2,'DC2':1};
+    exit
+
+Exit cqlsh and run describering again, noting that the endpoints obey the keyspace data center parameters above
+
+    docker-compose exec n1 nodetool describering pluralsight
+
+Run nodetool status and note that the one node in DC2 owns all the data, as does the one node in RAC2 of DC1:
+
+    docker-compose exec n1 nodetool status pluralsight
+
+Stop and remove all four docker containers:
+
+    docker-compose down
+
+-----
+
+Create a three node cluster:
+
+   cd single-dc
+   docker-compose up -d
+
+This may take a while to start-up all three nodes.  You can watch the logs of one of the nodes:
+
+   docker-compose logs -f n3
+   (Look for "Starting listening for CQL clients", then Ctrl-C to exit)
+
+Run cqlsh with:
+
+    docker-compose exec n1 cqlsh
+
+Create a keyspace and "use" it by entering this CQL at the cqlsh> prompt:
+
+    create keyspace pluralsight with replication = {'class':'SimpleStrategy', 'replication_factor':3};
+    use pluralsight;
+
+Create a simple, one column table in this keyspace:
+
+    create table courses (id varchar primary key);
+
+Check the current consistency level in cqlsh by running this command and examining the output:
+
+    consistency;
+
+Insert a row into the courses table and see it succeed at this concurrency level:
+
+    insert into courses (id) values ('cassandra-developers');
+
+Set the consistency level to "quorum" and successfully insert another row into the table:
+
+    consistency quorum;
+    insert into courses (id) values ('react-big-picture');
+
+Set the consistency level to "all", turn on tracing, and insert a third row:
+
+    consistency all;
+    tracing on;
+    insert into courses (id) values ('nodejs-big-picture');
+    exit
+
+Exit cqlsh and take one of the cassandra nodes offline by stopping the docker container:
+
+    docker-compose stop n3
+
+Run cqlsh again, set the consistency level to "all" and try to insert another row into the courses table:
+
+    docker-compose exec n1 cqlsh
+
+    use pluralsight;
+    consistency all;
+    insert into courses (id) values ('advanced-python');
+
+Set the consistency to "quorum" and try the same insert again:
+
+    consistency quorum;
+    insert into courses (id) values ('advanced-python');
+
+Select one of the inserted rows back from the courses table:
+
+    select * from courses where id = 'cassandra-developers';
+
+Set the consistency level to "all" and attempt to repeat the select statement:
+
+    consistency all;
+    select * from courses where id = 'cassandra-developers';
+    exit
+
+ Exit cqlsh and bring the previously downed node back online:
+
+     docker-compose start n3
+
+ Run cqlsh, set the consistency level to "all" and retry the select statement:
+
+     docker-compose exec n1 cqlsh
+
+     consistency all;
+     use pluralsight;
+     select * from courses where id = 'cassandra-developers';
+     exit
+
+ Stop and remove each of your docker containers:
+
+    docker-compose down
+
+-----
+
+Create a multi-DC cluster as described in module 1, placing nodes in the following data centers and racks:
+
+    cd multi-dc
+    docker compose up -d
+
+This may take a while to start-up all four nodes.  You can watch the logs of one of the nodes:
+
+    docker-compose logs -f n4
+    (Look for "Starting listening for CQL clients", then Ctrl-C to exit)
+
+Run cqlsh with:
+
+    docker-compose exec n1 cqlsh
+
+Create the pluralsight keyspace with NetworkTopologyStrategy, and create the courses table as before:
+
+    create keyspace pluralsight with replication = {'class':'NetworkTopologyStrategy', 'DC1':3,'DC2':1};
+    use pluralsight;
+    create table courses (id varchar primary key);
+
+Set the consistency level to "local_one" and insert a row into the table:
+
+    consistency local_one;
+    insert into courses (id) values ('cassandra-developers');
+    exit
+
+Exit cqlsh and take down the one node in DC2:
+
+    docker-compose stop n4
+
+Run nodetool status and verify that Cassandra treats this node as "down"
+
+    docker-compose exec n1 nodetool status
+
+Run cqlsh, set the consistency to "each_quorum" and try the insert again:
+
+    docker-compose exec n1 cqlsh
+
+    use pluralsight;
+    consistency each_quorum;
+    insert into courses (id) values ('nodejs-big-picture');
+
+Set the consistency to "local_quorum" and successfully insert the row:
+
+    consistency local_quorum;
+    insert into courses (id) values ('nodejs-big-picture');
+    exit
+
+Stop and remove all four docker containers:
+
+    docker-compose down
