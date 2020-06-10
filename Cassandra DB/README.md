@@ -4,6 +4,10 @@ This document contains my notes on Cassandra db, with these resources:
 3. [Documentation](https://cassandra.apache.org/doc/latest/)
 
 # General Intro to NoSQL
+How do you choose your database? 
+
+Query patterns (cause the compute is much costlier than storage), shape/kind of data (is it highly structured or smth else), scalability (some databases are horizontaly scalable and some don't have that facility)..., then odcourse think of the cost too.
+ 
 ## Pros and Cons of RDBMS & NoSQL db
 Cassandra is a NoSQL db. RDBMS provides a much organized storage of data than NoSQL. It is commonly said that NoSQL is better in cases when the db size is huge, as RDBMS is expensive in such cases, but scalability is not the only factor.
 
