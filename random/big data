@@ -1,0 +1,161 @@
+1-> 300 secs
+2 -> 452 secs
+
+3 -> true
+1593012501314
+STARTING: 1593012509259
+1593012510761
+STARTING: 1593012510762
+1593012511272
+STARTING: 1593012511274
+ENDING 1593013026927
+ENDING 1593013065767
+ENDING 1593013067999
+Tasks took 583468.340 ms to run
+
+
+
+"C:\Program Files\JDK\1.8\bin\java" -javaagent:C:\Developer\GSIntelliJCommunity2017.2\lib\idea_rt.jar=50232:C:\Developer\GSIntelliJCommunity2017.2\bin -Dfile.encoding=UTF-8 -classpath "C:\Program Files\JDK\1.8\jre\lib\charsets.jar;C:\Program Files\JDK\1.8\jre\lib\deploy.jar;C:\Program Files\JDK\1.8\jre\lib\ext\access-bridge-64.jar;C:\Program Files\JDK\1.8\jre\lib\ext\cldrdata.jar;C:\Program Files\JDK\1.8\jre\lib\ext\dnsns.jar;C:\Program Files\JDK\1.8\jre\lib\ext\jaccess.jar;C:\Program Files\JDK\1.8\jre\lib\ext\jfxrt.jar;C:\Program Files\JDK\1.8\jre\lib\ext\localedata.jar;C:\Program Files\JDK\1.8\jre\lib\ext\nashorn.jar;C:\Program Files\JDK\1.8\jre\lib\ext\sunec.jar;C:\Program Files\JDK\1.8\jre\lib\ext\sunjce_provider.jar;C:\Program Files\JDK\1.8\jre\lib\ext\sunmscapi.jar;C:\Program Files\JDK\1.8\jre\lib\ext\sunpkcs11.jar;C:\Program Files\JDK\1.8\jre\lib\ext\zipfs.jar;C:\Program Files\JDK\1.8\jre\lib\javaws.jar;C:\Program Files\JDK\1.8\jre\lib\jce.jar;C:\Program Files\JDK\1.8\jre\lib\jfr.jar;C:\Program Files\JDK\1.8\jre\lib\jfxswt.jar;C:\Program Files\JDK\1.8\jre\lib\jsse.jar;C:\Program Files\JDK\1.8\jre\lib\management-agent.jar;C:\Program Files\JDK\1.8\jre\lib\plugin.jar;C:\Program Files\JDK\1.8\jre\lib\resources.jar;C:\Program Files\JDK\1.8\jre\lib\rt.jar;H:\hello\target\classes;H:\.m2\repository\com\facebook\presto\presto-jdbc\0.215\presto-jdbc-0.215.jar" Main
+\Qkaustubh.trivedi\E
+true
+1593013388828
+STARTING: 10000 1593013390819
+ENDING: 10000 1593013442558
+1593013442689
+STARTING: 5000 1593013442689
+ENDING: 5000 1593013473665
+1593013473669
+STARTING: 1000 1593013473670
+ENDING: 1000 1593013479844
+1593013479845
+STARTING: 500 1593013479845
+ENDING: 500 1593013482153
+1593013482154
+STARTING: 250 1593013482154
+ENDING: 250 1593013483166
+1593013483167
+STARTING: 100 1593013483167
+ENDING: 100 1593013483658
+Tasks took 96080.819 ms to run
+
+Process finished with exit code 0
+
+\Qkaustubh.trivedi\E
+true
+1593013660844
+ENDING: 25000 145271
+1593013808003
+ENDING: 10000 55304
+1593013863440
+ENDING: 5000 33026
+1593013896472
+ENDING: 1000 5901
+1593013902375
+ENDING: 500 2773
+1593013905148
+ENDING: 250 5412
+1593013910561
+ENDING: 100 687
+Tasks took 254678.234 ms to run
+
+
+100
+
+Analysis Time	1.08ms
+Planning Time	116.25ms
+Execution Time	673.86ms
+Resource Utilization Summary
+CPU Time	518.00ms
+Scheduled Time	6.63s
+Blocked Time	43.58s
+Input Rows	136K
+Input Data	133KB
+Physical Input Rows	136K
+Physical Input Data	133KB
+
+250
+
+Analysis Time	1.23ms
+Planning Time	4.44s
+Execution Time	5.40s
+Resource Utilization Summary
+CPU Time	1.28s
+Scheduled Time	14.80s
+Blocked Time	1.21m
+Input Rows	337K
+Input Data	330KB
+
+500
+Analysis Time	1.32ms
+Planning Time	973.09ms
+Execution Time	2.75s
+Resource Utilization Summary
+CPU Time	2.52s
+Scheduled Time	28.45s
+Blocked Time	2.28m
+Input Rows	677K
+Input Data	661K
+
+1000
+Analysis Time	1.61ms
+Planning Time	2.73s
+Execution Time	5.84s
+Resource Utilization Summary
+CPU Time	4.93s
+Scheduled Time	51.96s
+Blocked Time	3.72m
+Input Rows	1.35M
+Input Data	1.28MB
+
+5000
+Analysis Time	6.30ms
+Planning Time	20.10s
+Execution Time	32.96s
+Resource Utilization Summary
+CPU Time	25.80s
+Scheduled Time	3.81m
+Blocked Time	15.07m
+Input Rows	6.74M
+Input Data	6.42MB
+
+10000
+Analysis Time	6.76ms
+Planning Time	29.03s
+Execution Time	55.24s
+Resource Utilization Summary
+CPU Time	50.92s
+Scheduled Time	7.53m
+Blocked Time	32.02m
+Input Rows	13.5M
+Input Data	12.9MB
+
+25000
+Analysis Time	16.87ms
+Planning Time	1.31m
+Execution Time	2.41m
+Resource Utilization Summary
+CPU Time	2.09m
+Scheduled Time	18.46m
+Blocked Time	1.37h
+Input Rows	33.6M
+Input Data	32.0MB
+Physical Input Rows	33.6M
+
+
+50000
+\Qkaustubh.trivedi\E
+true
+1593014847186
+ENDING: 50000 342197
+Tasks took 359502.900 ms to run
+39.99ms
+Planning Time	3.24m
+Execution Time	5.69m
+Resource Utilization Summary
+CPU Time	4.06m
+Scheduled Time	42.30m
+Blocked Time	3.12h
+Input Rows	67.3M
+Input Data	64.2MB
+Physical Input Rows	67.3M
+Physical Input Data	64.2MB
