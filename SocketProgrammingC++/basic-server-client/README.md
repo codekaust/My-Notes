@@ -15,6 +15,7 @@ Taken from [here](https://medium.com/mobile-development-group/simple-servers-cc4
 3. Use the `sockaddr_in` struct to get and store the details of the connection.
     * `sin_family`: Address family (`AF_INET`) 
     * `sin_port`: The port to use in 16-bit Network Byte Order (use `htons`)
+        * Why `serv_addr.sin_port = htons(portno);` and not use directly portno? The reason is most devices store numbers in big-endian format, but some also do in little-endian format [meaning that the least significant byte comes first]. The htons() function makes sure that numbers are stored in memory in network byte order, which is with the most significant byte first, so the name h[host]-to-n[network]-s[short, ports are in short].
     * `sin_addr`: The IP address in 32-bit Network Byte Order (use `INADDR_ANY` to connect to any network interface or `INADDR_LOOPBACK` to connect to `127.0.0.1`). 
     * `sin_zero`: Set it to `0`
 

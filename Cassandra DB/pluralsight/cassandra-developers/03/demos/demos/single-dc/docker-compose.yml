@@ -1,0 +1,25 @@
+version: '3'
+services:
+  n1:
+    build: .
+    image: cassandra-with-cqlshrc
+    networks:
+      - cluster
+  n2:
+    image: cassandra-with-cqlshrc
+    networks:
+      - cluster
+    environment:
+      - CASSANDRA_SEEDS=n1
+    depends_on:
+      - n1
+  n3:
+    image: cassandra-with-cqlshrc
+    networks:
+      - cluster
+    environment:
+      - CASSANDRA_SEEDS=n1
+    depends_on:
+      - n1
+networks:
+  cluster:

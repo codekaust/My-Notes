@@ -4,3 +4,4 @@ LearningGAN/img/
 *.swo
 **/*.out
 **/.vscode/
+**/__pycache__

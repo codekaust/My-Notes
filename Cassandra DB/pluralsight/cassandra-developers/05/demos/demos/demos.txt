@@ -1,0 +1,368 @@
+Start up a single-node of Cassandra with:
+
+    docker-compose up -d
+
+Verify it's "up" and "normal" with "nodetool status"
+
+    docker-compose exec n1 nodetool status
+
+Load course data by running a series of CQL commands from an external file
+
+    cat scripts/m3/courses.cql | docker-compose exec -T n1 cqlsh
+
+Run cqlsh with:
+
+    docker-compose exec n1 cqlsh
+
+Display the courses table schema and notice it's the seven columns from the end of the last module
+
+    use pluralsight;
+    desc table courses;
+
+Select data from this table and see the five sample courses we loaded from our file
+
+    select * from courses;
+
+Drop this table and create a new one to hold both course and module data
+
+    drop table courses;
+    create table courses (
+        id varchar,
+        name varchar,
+        author varchar,
+        audience int,
+        duration int,
+        cc boolean,
+        released timestamp,
+        module_id int,
+        module_name varchar,
+        module_duration int,
+        primary key (id, module_id)
+    ) with comment = 'A table of courses and modules';
+
+Insert data for the course, plus the first two modules
+
+    insert into courses (id, name, author, audience, duration, cc, released, module_id, module_name, module_duration)
+    values ('nodejs-big-picture','Node.js: The Big Picture','Paul O''Fallon', 1, 3240, true, '2019-06-03',1,'Course Overview',70);
+
+    insert into courses (id, name, author, audience, duration, cc, released, module_id, module_name, module_duration)
+    values ('nodejs-big-picture','Node.js: The Big Picture','Paul O''Fallon', 1, 3240, true, '2019-06-03',2,'Considering Node.js',900);
+
+Select the data we just inserted
+
+    select * from courses;
+    select * from courses where id = 'nodejs-big-picture';
+
+Now we can include both id and module_id in our where clause
+
+    select * from courses where id = 'nodejs-big-picture' and module_id = 2;
+
+We can't select by just module, unless we enable 'ALLOW FILTERING'
+
+    select * from courses where module_id = 2;                  // fails
+    select * from courses where module_id = 2 allow filtering;   // succeeds
+
+Now insert the remaining modules for the course
+
+    insert into courses (id, name, author, audience, duration, cc, released, module_id, module_name, module_duration)
+    values ('nodejs-big-picture','Node.js: The Big Picture','Paul O''Fallon', 1, 3240, true, '2019-06-03', 3, 'Thinking Asynchronously', 1304);
+
+    insert into courses (id, name, author, audience, duration, cc, released, module_id, module_name, module_duration)
+    values ('nodejs-big-picture','Node.js: The Big Picture','Paul O''Fallon', 1, 3240, true, '2019-06-03', 4, 'Defining an Application and Managing Dependencies', 525);
+
+    insert into courses (id, name, author, audience, duration, cc, released, module_id, module_name, module_duration)
+    values ('nodejs-big-picture','Node.js: The Big Picture','Paul O''Fallon', 1, 3240, true, '2019-06-03', 5, 'Assembling a Development Toolset', 489);
+
+We can also use module_id as part of an "in" clause
+
+    select * from courses where id = 'nodejs-big-picture' and module_id in (2,3,4);
+
+And we can order by module_id
+
+    select * from courses where id = 'nodejs-big-picture' order by module_id desc;
+
+We can "select distinct" just the id, but not the id and course name:
+
+    select distinct id from courses;         // succeeds
+    select distinct id, name from courses;   // fails
+
+Shutdown our Cassandra instance
+
+    exit
+    docker-compose down
+
+-----
+
+Launch our one Cassandra node and (when it's ready) load our sample course data
+
+    docker-compose up -d
+    docker-compose exec n1 nodetool status
+    cat scripts/m3/courses.cql | docker-compose exec -T n1 cqlsh
+
+Run cqlsh with:
+
+    docker-compose exec n1 cqlsh
+
+From cqlsh, drop and recreate the courses table, using static columns
+
+    use pluralsight;
+    drop table courses;
+    create table courses (
+        id varchar,
+        name varchar static,
+        author varchar static,
+        audience int static,
+        duration int static,
+        cc boolean static,
+        released timestamp static,
+        module_id int,
+        module_name varchar,
+        module_duration int,
+        primary key (id, module_id)
+    ) with comment = 'A table of courses and modules';
+
+Insert just the course data, and select it back
+
+    insert into courses (id, name, author, audience, duration, cc, released)
+    values ('nodejs-big-picture','Node.js: The Big Picture','Paul O''Fallon', 1, 3240, true, '2019-06-03');
+
+    select * from courses where id = 'nodejs-big-picture';
+
+Now insert the module data for the first two modules
+
+    insert into courses (id, module_id, module_name, module_duration)
+    values ('nodejs-big-picture',1,'Course Overview',70);
+
+    insert into courses (id, module_id, module_name, module_duration)
+    values ('nodejs-big-picture',2,'Considering Node.js',900);
+
+Selecting from courses now returns both course and module data in each row
+
+    select * from courses where id = 'nodejs-big-picture';
+    select * from courses where id = 'nodejs-big-picture' and module_id = 2;
+
+Insert the third module, but also change the name of the course.  Select all rows to show the course title changed everywhere.
+
+    insert into courses (id, name, module_id, module_name, module_duration)
+    values ('nodejs-big-picture', 'The Big Node.js Picture', 3, 'Thinking Asynchronously', 1304);
+
+    select * from courses where id = 'nodejs-big-picture';
+
+Insert the fourth module, and fix the course name
+
+    insert into courses (id, name, module_id, module_name, module_duration)
+    values ('nodejs-big-picture', 'Node.js: The Big Picture', 4, 'Defining an Application and Managing Dependencies', 525);
+
+Insert the remaining course module
+
+    insert into courses (id, module_id, module_name, module_duration)
+    values ('nodejs-big-picture', 5, 'Assembling a Development Toolset', 489);
+
+The 'in' and 'order by' clauses work the same as before
+
+    select * from courses where id = 'nodejs-big-picture' and module_id in (2,3,4);
+
+    select * from courses where id = 'nodejs-big-picture' order by module_id desc;
+
+Select course info, repeated based on the number of modules in the course
+
+    select id, name, author, audience, duration, cc, released from courses;
+
+Now "select distinct" course info and only get one row back
+
+    select distinct id, name, author, audience, duration, cc, released from courses;
+
+Select just the module information for the course
+
+    select module_id, module_name, module_duration from courses where id = 'nodejs-big-picture';
+
+Exit cqlsh:
+
+    exit
+
+-----
+
+Load module-level course data by running a series of CQL commands from an external file
+
+    cat scripts/m4/courses.cql | docker-compose exec -T n1 cqlsh
+
+Run cqlsh with:
+
+    docker-compose exec n1 cqlsh
+
+Select module information for the 'advanced-javascript' course
+
+    use pluralsight;
+    select module_id, module_name, module_duration from courses where id = 'advanced-javascript';
+
+Select module information for the 'docker-fundamentals' course
+
+    select module_id, module_name, module_duration from courses where id = 'advanced-python';
+
+Select just the course-level information for all 5 courses
+
+    select distinct id, name, author from courses;
+
+Exit cqlsh and shutdown Cassandra
+
+    exit
+    docker-compose down
+
+-----
+
+Launch our one Cassandra node and (when it's ready) load our sample course data
+
+    docker-compose up -d
+    docker-compose exec n1 nodetool status
+    cat scripts/m4/courses.cql | docker-compose exec -T n1 cqlsh
+
+Run cqlsh with:
+
+    docker-compose exec n1 cqlsh
+
+From cqlsh, create a new table to hold course page views
+
+    use pluralsight;
+    create table course_page_views (
+        course_id varchar,
+        view_id timeuuid,
+        primary key (course_id, view_id)
+    ) with clustering order by (view_id desc);
+
+Insert a row into this table, using "now()" to create a timeuuid with the current date/time.  Include a one year TTL.
+
+    insert into course_page_views (course_id, view_id)
+    values ('nodejs-big-picture', now()) using TTL 31536000;
+
+Insert another row into the table with a manually generated v1 UUID (also with a TTL)
+
+    insert into course_page_views (course_id, view_id)
+    values ('nodejs-big-picture', bb9807aa-fb68-11e9-8f0b-362b9e155667) using TTL 31536000;
+
+Insert two more rows using "now()"
+
+    insert into course_page_views (course_id, view_id)
+    values ('nodejs-big-picture', now()) using TTL 31536000;
+
+    insert into course_page_views (course_id, view_id)
+    values ('nodejs-big-picture', now()) using TTL 31536000;
+
+Select the rows, and then use dateOf() to extract the date/time portion of the view_id
+
+    select * from course_page_views;
+    select dateOf(view_id) from course_page_views where course_id = 'nodejs-big-picture';
+
+Reverse the date order of the results
+
+    select dateOf(view_id) from course_page_views where course_id = 'nodejs-big-picture' order by view_id asc;
+
+Select only those dates based on Timeuuids that span a 2 day range
+
+    select dateOf(view_id) from course_page_views where course_id = 'nodejs-big-picture'
+    and view_id >= maxTimeuuid('2019-10-30 00:00+0000')
+    and view_id < minTimeuuid('2019-11-02 00:00+0000');
+
+    // adjust these dates as necessary to match a more current date range
+
+Truncate the table, and add a static column
+
+    truncate course_page_views;
+    alter table course_page_views add last_view_id timeuuid static;
+
+Now insert three rows, using "now()" for both Timeuuids (with TTLs)
+
+    insert into course_page_views (course_id, last_view_id, view_id)
+    values ('nodejs-big-picture', now(), now()) using TTL 31536000;
+
+    insert into course_page_views (course_id, last_view_id, view_id)
+    values ('nodejs-big-picture', now(), now()) using TTL 31536000;
+
+    insert into course_page_views (course_id, last_view_id, view_id)
+    values ('nodejs-big-picture', now(), now()) using TTL 31536000;
+
+Selecting all rows shows different view_ids but the same last_view_id for all rows
+
+    select * from course_page_views;
+
+Use 'select distinct' to get just the latest page view for this course
+
+    select distinct course_id, last_view_id from course_page_views;
+
+For just one course, this can also be accomplished with the view_id and a LIMIT clause
+
+    select course_id, view_id from course_page_views where course_id = 'nodejs-big-picture' limit 1;
+
+However, a 'limit' won't work across multiple courses.  Insert multiple views for another course.
+
+    insert into course_page_views (course_id, last_view_id, view_id)
+    values ('advanced-javascript', now(), now()) using TTL 31536000;
+
+    insert into course_page_views (course_id, last_view_id, view_id)
+    values ('advanced-javascript', now(), now()) using TTL 31536000;
+
+    insert into course_page_views (course_id, last_view_id, view_id)
+    values ('advanced-javascript', now(), now()) using TTL 31536000;
+
+Select latest view_id from each course, using the limit clause
+
+    select course_id, view_id from course_page_views where course_id = 'nodejs-big-picture' limit 1;
+    select course_id, view_id from course_page_views where course_id = 'advanced-javascript' limit 1;
+
+Retrieve the latest course page view for all courses with 'select distinct' and the static column
+
+    select distinct course_id, last_view_id from course_page_views;
+
+Select all the individual views for each course, one at a time
+
+    select course_id, view_id from course_page_views where course_id = 'nodejs-big-picture';
+    select course_id, view_id from course_page_views where course_id = 'advanced-javascript';
+
+Exit cqlsh and shutdown our one Cassandra node
+
+    exit
+    docker-compose down
+
+-----
+
+Launch our one Cassandra node and (when it's ready) load our sample course data
+
+    docker-compose up -d
+    docker-compose exec n1 nodetool status
+    cat scripts/m4/courses.cql | docker-compose exec -T n1 cqlsh
+
+Run cqlsh with:
+
+    docker-compose exec n1 cqlsh
+
+From cqlsh, create a new table to hold "bucketed" course page views
+
+    use pluralsight;
+    create table course_page_views (
+        bucket_id varchar,
+        course_id varchar,
+        last_view_id timeuuid static,
+        view_id timeuuid,
+        primary key ((bucket_id, course_id), view_id)
+    ) with clustering order by (view_id desc);
+
+Insert a few values into different buckets
+
+    insert into course_page_views (bucket_id, course_id, last_view_id, view_id)
+    values ('2019-12', 'nodejs-big-picture', now(), now());
+
+    insert into course_page_views (bucket_id, course_id, last_view_id, view_id)
+    values ('2020-01', 'nodejs-big-picture', now(), now());
+
+    insert into course_page_views (bucket_id, course_id, last_view_id, view_id)
+    values ('2020-01', 'cassandra-developers', now(), now());
+
+Can still select latest course page view for multiple courses,
+but we're more constrained this time (bucket and courses required)
+
+    select distinct course_id, last_view_id from course_page_views
+    where course_id in ('nodejs-big-picture', 'cassandra-developers') and bucket_id = '2020-01';
+
+Exit cqlsh and shutdown our one Cassandra node
+
+    exit
+    docker-compose down

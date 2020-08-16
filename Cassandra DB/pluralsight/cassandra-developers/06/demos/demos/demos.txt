@@ -1,0 +1,188 @@
+Start up a single-node of Cassandra with:
+
+    docker-compose up -d
+
+Load course data by running a series of CQL commands from an external file
+
+    cat scripts/m4/courses.cql | docker-compose exec -T n1 cqlsh
+
+Run cqlsh with:
+
+    docker-compose exec n1 cqlsh
+
+Take a look at what was just loaded
+
+    use pluralsight;
+    desc table courses;
+
+Drop the existing "cc" column and replace it with a new "features" set column
+
+    alter table courses drop cc;
+    alter table courses add features set<varchar> static;
+
+Add the "cc" value back to the "nodejs-big-picture" course, and see what we have
+
+    update courses set features = {'cc'} where id = 'nodejs-big-picture';
+    select distinct id, name, features from courses;
+
+Add a few additional "fake" features to this course, using the "addition" method, and see what we have
+
+    update courses set features = features + {'f1','f2'} where id = 'nodejs-big-picture';
+    select distinct id, name, features from courses;
+
+Now remove these two features, using the "subtraction" method, and see what we have
+
+    update courses set features = features - {'f1','f2'} where id = 'nodejs-big-picture';
+    select distinct id, name, features from courses;
+
+Add a new clips list column to the courses table, add some data and see what we have
+
+    alter table courses add clips list<varchar>;
+    update courses set clips = ['Course Overview'] where id = 'nodejs-big-picture' and module_id = 1;
+    select module_id, module_name, clips from courses where id = 'nodejs-big-picture';
+
+Append another clip using the "addition" method, and see what we have
+
+    update courses set clips = clips + ['Course Intro'] where id = 'nodejs-big-picture' and module_id = 2;
+    select module_id, module_name, clips from courses where id = 'nodejs-big-picture';
+
+Fix the value of this newly added column by referring to the element by its position in the list, and see what we have
+
+    update courses set clips[1] = 'Course Introduction' where id = 'nodejs-big-picture' and module_id = 2;
+    select module_id, module_name, clips from courses where id = 'nodejs-big-picture';
+
+Append two more "fake" clips using the "addition method", and see what we have
+
+    update courses set clips = clips + ['clip','clip'] where id = 'nodejs-big-picture' and module_id = 1;
+    select module_id, module_name, clips from courses where id = 'nodejs-big-picture';
+    select module_id, clips from courses where id = 'nodejs-big-picture';
+
+Remove the "fake" clips with the "subtraction" method (note that it removes *all* matching clips)
+
+    update courses set clips = clips - ['clip'] where id = 'nodejs-big-picture' and module_id = 1;
+    select module_id, clips from courses where id = 'nodejs-big-picture';
+
+Exit cqlsh and shutdown our one Cassandra node
+
+    exit
+    docker-compose down
+
+-----
+
+Start up a single-node of Cassandra with:
+
+    docker-compose up -d
+
+Load user data by running a series of CQL commands from an external file
+
+    cat scripts/m3/users.cql | docker-compose exec -T n1 cqlsh
+
+Run cqlsh with:
+
+    docker-compose exec n1 cqlsh
+
+Add a map of "last logins" to the users table
+
+    use pluralsight;
+    alter table users add last_login map<varchar,timestamp>;
+
+Add a last login value for user John Doe using the "addition" method
+
+    update users set last_login = last_login + {'383cc0867cd2':'2019-10-30 09:02:24'} where id = 'john-doe';
+
+Add another value, but with a TTL and using a more traditional "map" approach, and see what we have
+
+    update users using TTL 60 set last_login['7eb0a8997f39'] = '2019-11-02 07:32:17' where id = 'john-doe';
+    select last_login from users where id = 'john-doe';
+
+Keep running the select statement until the TTL is reached and the '7eb0a8997f39' value is removed from the map
+
+Exit cqlsh and shutdown our one Cassandra node
+
+    exit
+    docker-compose down
+
+---
+
+Start up a single-node of Cassandra with:
+
+    docker-compose up -d
+
+Load user data by running a series of CQL commands from an external file
+
+    cat scripts/m3/users.cql | docker-compose exec -T n1 cqlsh
+
+Run cqlsh with:
+
+    docker-compose exec n1 cqlsh
+
+Add a new "last logins" map, but this time with a tuple value
+
+    use pluralsight;
+    alter table users add last_login map<varchar,frozen<tuple<timestamp,inet>>>;
+
+Add a last login value, and see what we have
+
+    update users set last_login = last_login + {'3383cc0867cd2':('2019-10-30 09:02:24','98.203.153.64')} where id = 'john-doe';
+    select last_login from users where id = 'john-doe';
+
+Exit cqlsh and shutdown our one Cassandra node
+
+    exit
+    docker-compose down
+
+----
+
+Start up a single-node of Cassandra with:
+
+    docker-compose up -d
+
+Load course data by running a series of CQL commands from an external file
+
+    cat scripts/m4/courses.cql | docker-compose exec -T n1 cqlsh
+
+Run cqlsh with:
+
+    docker-compose exec n1 cqlsh
+
+Create a "clip" User Defined Type, and use it to add a list of "clips" to the courses table
+
+    use pluralsight;
+    create type clip (name varchar, duration int);
+    alter table courses add clips list<frozen<clip>>;
+
+Add clips to the "nodejs-big-picture" course a couple of different ways, and see what we have
+
+    insert into courses (id, module_id, clips) values ('nodejs-big-picture',1,[{name: 'Course Overview', duration: 70}]);
+    update courses set clips = clips + [{name: 'Course Introduction', duration: 184}] where id = 'nodejs-big-picture' and module_id = 2;
+    select module_id, clips from courses where id = 'nodejs-big-picture';
+
+Drop the courses table and exit cqlsh
+
+    drop table courses;
+    exit
+
+Load a courses table with 5 full sample courses
+
+  cat scripts/m5/courses.cql | docker-compose exec -T n1 cqlsh
+
+Run cqlsh with:
+
+  docker-compose exec n1 cqlsh
+
+Look at the clips for a couple of other courses
+
+    use pluralsight;
+    select module_id, clips from courses where id = 'advanced-python';
+    select module_id, clips from courses where id = 'react-big-picture';
+
+These can also be queried as JSON:
+
+    select JSON module_id, clips from courses where id = 'nodejs-big-picture';
+
+(Look at scripts/m5/courses.cql to see how some of the courses data is inserted as JSON)
+
+Exit cqlsh and shutdown our one Cassandra node
+
+    exit
+    docker-compose down

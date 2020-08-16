@@ -4,6 +4,10 @@ This document contains my notes on Cassandra db, with these resources:
 3. [Documentation](https://cassandra.apache.org/doc/latest/)
 
 # General Intro to NoSQL
+How do you choose your database? 
+
+Query patterns (cause the compute is much costlier than storage), shape/kind of data (is it highly structured or smth else), scalability (some databases are horizontaly scalable and some don't have that facility)..., then odcourse think of the cost too.
+ 
 ## Pros and Cons of RDBMS & NoSQL db
 Cassandra is a NoSQL db. RDBMS provides a much organized storage of data than NoSQL. It is commonly said that NoSQL is better in cases when the db size is huge, as RDBMS is expensive in such cases, but scalability is not the only factor.
 
@@ -53,7 +57,7 @@ Availability is supported by **Active Everywhere Design** -> all nodes maybe rea
 **CQL & Flexible-Dynamic data models**: Cassandra offers Cassandra Query Language [SQL like] and supports modern data types with fast read write.
 
 ## Cassandra Architecture
-- Architecture reason for ability to scale, perform, and offer continuous uptime. 
+- Architecture is the reason for ability to scale, perform, and offer continuous uptime. 
 - Has a master-less “ring” design, and not legacy master-slave or a manual and difficult-to-maintain sharded architecture.
 - All nodes play an identical role; no concept of a master node; all nodes communicating with each other equally.
 - This built-for-scale architecture means that it is capable of handling large amounts of data and thousands of concurrent users or operations per second— even across multiple data centers— as easily as it can manage much smaller amounts of data and user traffic. 
